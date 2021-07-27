@@ -1,0 +1,24 @@
+// Convert image to grayscale
+void grayscale(int height, int width, RGBTRIPLE image[height][width])
+{
+    //iterate over every row of pixels
+    for (int h = 0; h < height; h++)
+    {
+        //iterate over every pixel in the row
+        for (int w = 0; w < width; w++)
+        {
+            //when the proportion of blue, red and green are equal, it generates a shade in the b&w spectrum
+            //for black it is 000000 because that's the absence of any color
+            //for white it is ffffff because that's the max of all colors
+            //to make a grey color, the avg of RBG values is taken here and applied to all of them
+            float sum = image[h][w].rgbtBlue + image[h][w].rgbtGreen + image[h][w].rgbtRed;
+            float Avg = (sum / 3);
+            int A = round(Avg);
+
+            image[h][w].rgbtBlue = A;
+            image[h][w].rgbtGreen = A;
+            image[h][w].rgbtRed = A;
+        }
+    }
+    return;
+}
