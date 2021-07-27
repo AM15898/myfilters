@@ -1,0 +1,78 @@
+#include "helpers.h"
+#include <math.h>
+#include <stdio.h>
+
+// Detect edges
+void edges(int height, int width, RGBTRIPLE image[height][width])
+{
+    // Creating a copy of image with an extra border of black layer
+    RGBTRIPLE temp[height + 2][width + 2];
+
+    for (int h = 0; h < height + 2; h++)
+    {
+        for (int w = 0; w < width + 2; w++)
+        {
+            if (h == 0 || w == 0 || h == height + 1 || w == width + 1)
+            {
+                temp[h][w].rgbtRed = 0;
+                temp[h][w].rgbtGreen = 0;
+                temp[h][w].rgbtBlue = 0;
+            }
+            else
+            {
+                temp[h][w] = image[h - 1][w - 1];
+            }
+        }
+    }
+    // Create the matrix Gx and Gy
+    int Gx[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+    int Gy[3][3] = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
+
+    for (int h = 1; h < height + 1; h++)
+    {
+        for (int w = 1; w < width + 1; w++)
+        {
+            // Total values for red-x, green-x, blue-x, red-y, green-y and blue-y
+            int Rx = 0;
+            int xGx = 0;
+            int Bx = 0;
+            int Ry = 0;
+            int yGy = 0;
+            int By = 0;
+            for (int a = -1; a < 2; a++)
+            {
+                for (int b = -1; b < 2; b++)
+                {
+                    Rx += (temp[h + a][w + b].rgbtRed * Gx[a + 1][b + 1]);
+                    xGx += (temp[h + a][w + b].rgbtGreen * Gx[a + 1][b + 1]);
+                    Bx += (temp[h + a][w + b].rgbtBlue * Gx[a + 1][b + 1]);
+                    Ry += (temp[h + a][w + b].rgbtRed * Gy[a + 1][b + 1]);
+                    yGy += (temp[h + a][w + b].rgbtGreen * Gy[a + 1][b + 1]);
+                    By += (temp[h + a][w + b].rgbtBlue * Gy[a + 1][b + 1]);
+                }
+            }
+            int red = round(sqrt(pow(Rx, 2) + pow(Ry, 2)));
+            int green = round(sqrt(pow(xGx, 2) + pow(yGy, 2)));
+            int blue = round(sqrt(pow(Bx, 2) + pow(By, 2)));
+
+            // All values above 255 are set at max of 255
+            if (red > 255)
+            {
+                red = 255;
+            }
+            if (green > 255)
+            {
+                green = 255;
+            }
+            if (blue > 255)
+            {
+                blue = 255;
+            }
+            image[h - 1][w - 1].rgbtRed = red;
+            image[h - 1][w - 1].rgbtGreen = green;
+            image[h - 1][w - 1].rgbtBlue = blue;
+        }
+    }
+    return;
+}
+
