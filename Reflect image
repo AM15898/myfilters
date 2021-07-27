@@ -1,0 +1,22 @@
+#include "helpers.h"
+#include <math.h>
+#include <stdio.h>
+
+void reflect(int height, int width, RGBTRIPLE image[height][width])
+{
+    // a temporary variable is created here because otherwise the original pixel gets altered
+    RGBTRIPLE temp;
+    for (int h = 0; h < height; h++)
+    {
+        //We only want to reflect half the image, because the rest half is transferred
+        // w/2 gives the lower value in case of a decimal which solves our problem of not moving the middle
+        // cell in case of a odd number of pixels
+        for (int w = 0; w < width / 2; w++)
+        {
+            temp = image[h][w];
+            image[h][w] = image[h][width - 1 - w];
+            image[h][width - 1 - w] = temp;
+        }
+    }
+    return;
+}
